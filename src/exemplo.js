@@ -1,21 +1,16 @@
 
-const connection = require('./database/connection');
-const {QueryTypes} = require('sequelize');
+const UserModel = require("./models/UserModel");
 
-async function execute() {
-    const resultado = await connection.query("DESCRIBE produtos", {
-        type: QueryTypes.DESCRIBE
-    });
+UserModel.create({
+    firstname: "Joaquim",
+    surname: "Silva",
+    email: "joaqui@mail.com",
+    password: "1234"
+});
 
-    const produtos = await connection.query("SELECT * FROM produtos WHERE id = 1", {
-        type: QueryTypes.SELECT
-    });
+UserModel.destroy({
+    where: {
+        id: 2
+    }
+})
 
-    const update = await connection.query("UPDATE produtos SET name = 'Iphone TESTE' WHERE id = 1", {
-        type: QueryTypes.UPDATE
-    });
-
-    console.log(update);
-}
-
-execute(); 
