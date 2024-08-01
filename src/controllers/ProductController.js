@@ -6,10 +6,8 @@ const ProductController = {
     },
 
     async list() {
-        let products = await ProductModel.findByPk(1, {
-            attributes: ['name', 'price']
-        });
-        console.log(products.dataValues);
+        let products = await ProductModel.findAll();
+        console.log(products);
     }
 }
 
