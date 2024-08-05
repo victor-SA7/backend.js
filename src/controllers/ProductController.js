@@ -1,13 +1,16 @@
 const ProductModel = require('../models/ProductModel');
 
 const ProductController = {
-    create(request) {
+    create(request, response) {
         ProductModel.create(request.body);
+        response.json({
+            message: "Produto criado com sucesso"
+        });
     },
 
-    async list() {
-        let products = await ProductModel.findAll();
-        console.log(products);
+    async list(request, response) {
+        const products = await ProductModel.findAll();
+        response.json(products);
     }
 }
 

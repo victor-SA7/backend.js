@@ -3,25 +3,16 @@ const app = express();
 
 app.use(express.json());
 
-const ProductModel = require('./models/ProductModel');
-const UserModel = require('./models/UserModel');
+const UserController = require('./controllers/UserController');
+const ProductController = require('./controllers/ProductController');
 
-app.get('/products', async function(request, response) {
-    const products = await ProductModel.findAll();
-    response.json(products);
-});
+app.get('/products', ProductController.list);
+app.post('/products', ProductController.create);
 
-app.get('/users', async function(request, response) {
-    const users = await UserModel.findAll();
-    response.json(users);
-});
-
-app.post('/users', function(resquest, response) {
-    UserModel.create(resquest.body);
-    return response.json({
-        message: "Usuario criado com sucesso!"
-    });
-});
+app.get('/users', UserController.list);
+app.post('/users', UserController.create);
+app.put('/users/:id', UserController.update);
+app.delete('/users/:id', UserController.delete);
 
 app.listen(3000);
 
