@@ -1,4 +1,5 @@
 const UserModel = require('../models/UserModel');
+const ProductModel = require('../models/ProductModel');
 
 const UserController = {
     async create(resquest, response) {
@@ -10,22 +11,37 @@ const UserController = {
 
         if (!resquest.body.firstname || !resquest.body.surname || !resquest.body.email || !resquest.body.password){
             messageReturn = 'firstname, surname, email e password são obrigatórios!'
+            return response.status(400).json({
+                message: messageReturn
+            })
         } 
         else if (emailReq && emailReq.dataValues.id > 0){
             messageReturn = 'Esse email já está cadastrado!'
+            return response.status(400).json({
+                message: messageReturn
+            })
         }
-        else {
-            UserModel.create(resquest.body);
-            messageReturn = 'Usuario criado com sucesso!'
-        }
+        
+        UserModel.create(resquest.body);
+        messageReturn = 'Usuario criado com sucesso!'
 
+        response.status(201);
         return response.json({
             message: messageReturn
         });
     },
 
     async list(request, response) {
-        const users = await UserModel.findAll();
+        const users = await UserModel.findOne();
+
+        const products = await ProductModel.findAll({
+            where: {
+                user_id: users.id
+            }
+        });
+
+        users.setDataValue('products', products);
+
         return response.json(users);
     },
 
