@@ -1,28 +1,14 @@
 const UserModel = require('../models/UserModel');
 const ProductModel = require('../models/ProductModel');
+const bcrypt = require("bcrypt");
 
 const UserController = {
-    async create(resquest, response) {
-        let messageReturn = ''
-        const email = resquest.body.email
-        const emailReq = await UserModel.findOne({
-            where: { email }
-            });
-
-        if (!resquest.body.firstname || !resquest.body.surname || !resquest.body.email || !resquest.body.password){
-            messageReturn = 'firstname, surname, email e password são obrigatórios!'
-            return response.status(400).json({
-                message: messageReturn
-            })
-        } 
-        else if (emailReq && emailReq.dataValues.id > 0){
-            messageReturn = 'Esse email já está cadastrado!'
-            return response.status(400).json({
-                message: messageReturn
-            })
-        }
+    async create(request, response) {
         
-        UserModel.create(resquest.body);
+        let hash = await bcrypt.hash(request.body.password, 10);
+        request.body.password = hash;
+
+        UserModel.create(request.body);
         messageReturn = 'Usuario criado com sucesso!'
 
         response.status(201);
@@ -31,16 +17,31 @@ const UserController = {
         });
     },
 
-    async list(request, response) {
-        const users = await UserModel.findOne();
+    async login(request, response) {
+        let email = request.body.email;
+        let password = request.body.password
 
-        const products = await ProductModel.findAll({
+        let user = await UserModel.findOne({
+            where: { email }
+        });
+
+        let hasValid = await bcrypt.compare(password, user.password);
+
+        response.json({
+            message: hasValid
+        })
+    },
+
+    async list(request, response) {
+        const users = await UserModel.findAll();
+
+        /*const products = await ProductModel.findAll({
             where: {
                 user_id: users.id
             }
         });
 
-        users.setDataValue('products', products);
+        users.setDataValue('products', products);*/
 
         return response.json(users);
     },
