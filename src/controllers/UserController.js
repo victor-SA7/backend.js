@@ -1,6 +1,7 @@
 const UserModel = require('../models/UserModel');
 const ProductModel = require('../models/ProductModel');
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 
 const UserController = {
     async create(request, response) {
@@ -20,15 +21,31 @@ const UserController = {
     async login(request, response) {
         let email = request.body.email;
         let password = request.body.password
+        let messageCompare = ''
+        let authSecret = 'Sfk802$#djhsa@Sf93s2&(3'
+        // Controle para tornar email e senha obrigatórios
+        if (!email || !password){
+            messageCompare = 'email e password são obrigatórios!'
+        } else {
 
-        let user = await UserModel.findOne({
-            where: { email }
-        });
-
-        let hasValid = await bcrypt.compare(password, user.password);
+            let user = await UserModel.findOne({
+                where: { email }
+            });
+            
+            let userPassword = user ? user.password : ''
+            let hasValid = await bcrypt.compare(password, userPassword);
+            // Lógica para criação do token válido por 8h
+            const expiresIn = '8h'
+            const token = hasValid ? jwt.sign({
+                id: user.id, name: user.firstname, email: user.email}, authSecret, {
+                    expiresIn
+                }) : 'Usuário ou senha inválido!'
+            
+            messageCompare = token
+        }
 
         response.json({
-            message: hasValid
+            message: messageCompare
         })
     },
 
