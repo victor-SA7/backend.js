@@ -27,7 +27,7 @@ const UserController = {
         if (!email || !password){
             messageCompare = 'email e password são obrigatórios!'
         } else {
-
+            // Buscando usuário com o email passado pelo body
             let user = await UserModel.findOne({
                 where: { email }
             });
