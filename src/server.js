@@ -1,3 +1,7 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
+
 const express = require('express');
 const app = express();
 
@@ -9,6 +13,9 @@ const UserCreateValidation = require("./middleware/UserCreateValidation");
 
 app.get('/products', ProductController.list);
 app.post('/products', ProductController.create);
+// app.put('/products/:id', ProductController.update);
+// app.delete('/products/:id', ProductController.delete);
+
 
 app.get('/users', UserController.list);
 app.post('/users', UserCreateValidation, UserController.create);

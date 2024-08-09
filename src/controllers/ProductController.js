@@ -1,3 +1,4 @@
+const { Error } = require('sequelize');
 const ProductModel = require('../models/ProductModel');
 const jwt = require('jsonwebtoken');
 
@@ -17,17 +18,35 @@ const ProductController = {
             response.json({message: "Token inválido!", sucess: false})
         } else{
 
-            let authSecret = 'Sfk802$#djhsa@Sf93s2&(3'
-            const decoded = jwt.verify(token, authSecret);
+            // let authSecret = 'Sfk802$#djhsa@Sf93s2&(3'
 
-            console.log(decoded);
+            try{
+                // throw new Error("meu proprio erro");
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                console.log(decoded);
+                const products = await ProductModel.findAll({
+                    where: { user_id: decoded.id }
+                });
+                
+                response.json(products);
 
-            const products = await ProductModel.findAll({
-                where: { user_id: decoded.id }
-            })
+            } catch(error){
+                // if(error.name === "SequelizeDatabaseError"){
+                //     return response.json({
+                //         message: "Ocorreu um erro no servidor"
+                //     });
+                // }
+                // console.log(error.message);
+                // // console.log(Object.getOwnPropertyNames(error));
+                return response.json({
+                    message: error.message
+                })
+            }
+
+           
             
             
-            response.json(products);
+
         }
     }
 }
