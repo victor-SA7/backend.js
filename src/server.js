@@ -11,17 +11,25 @@ const UserController = require('./controllers/UserController');
 const ProductController = require('./controllers/ProductController');
 const UserCreateValidation = require("./middleware/UserCreateValidation");
 
+
+const JwtVerifyToken = require("./middleware/jwtVerifyTokens");
+
+const PrivetRoutes = express.Router();
+PrivetRoutes.use(JwtVerifyToken);
+
+
+
 app.get('/products', ProductController.list);
-app.post('/products', ProductController.create);
+PrivetRoutes.post('/products', ProductController.create);
 // app.put('/products/:id', ProductController.update);
 // app.delete('/products/:id', ProductController.delete);
 
 
 app.get('/users', UserController.list);
-app.post('/users', UserCreateValidation, UserController.create);
+PrivetRoutes.post('/users', UserCreateValidation, UserController.create);
 app.post('/login', UserController.login);
-app.put('/users/:id', UserController.update);
-app.delete('/users/:id', UserController.delete);
+PrivetRoutes.put('/users/:id', UserController.update);
+PrivetRoutes.delete('/users/:id', UserController.delete);
 
 app.listen(3000);
 
